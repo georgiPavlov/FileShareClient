@@ -14,7 +14,7 @@ public class ClientCommunicator {
         this.in = in;
     }
 
-    public void startCommucateWithServer() throws IOException {
+    public void startCommunicateWithServer() throws IOException {
         String fileName = in.readUTF();
 
            File file = new File("/home/user/FileShareClient/files/videos/" + fileName);

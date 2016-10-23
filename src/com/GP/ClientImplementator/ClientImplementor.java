@@ -52,7 +52,7 @@ public class ClientImplementor {
     public void startCommunication(){
         ClientCommunicator communicator = new ClientCommunicator(out,in);
         try {
-            communicator.startCommucateWithServer();
+            communicator.startCommunicateWithServer();
         } catch (IOException e) {
             e.printStackTrace();
         }
