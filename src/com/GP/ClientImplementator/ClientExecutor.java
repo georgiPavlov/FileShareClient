@@ -7,6 +7,7 @@ public class ClientExecutor {
 
     public static void main(String[] args) {
         ClientImplementor implementor = new ClientImplementor(6666);
+        implementor.startCommunication();
 
     }
 }

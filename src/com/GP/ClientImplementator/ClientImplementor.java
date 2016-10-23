@@ -8,8 +8,8 @@ import java.net.Socket;
  */
 public class ClientImplementor {
     private int port;
-    private BufferedWriter out;
-    private BufferedReader in;
+    private DataOutputStream out;
+    private DataInputStream in;
     private Socket socket;
 
     public ClientImplementor(int port){
@@ -27,13 +27,13 @@ public class ClientImplementor {
     private  void createStreams() throws IOException{
 
         in =
-                    new BufferedReader(
-                            new InputStreamReader(socket.getInputStream()));
+                new DataInputStream(
+                        socket.getInputStream());
         out =
-                    new BufferedWriter(
-                            new OutputStreamWriter(socket.getOutputStream()));
+                new DataOutputStream(
+                        socket.getOutputStream());
 
-        System.out.println(in.readLine());
+        //System.out.println(in.readLine());
 
 
 
@@ -51,7 +51,11 @@ public class ClientImplementor {
 
     public void startCommunication(){
         ClientCommunicator communicator = new ClientCommunicator(out,in);
-        communicator.startCommucateWithServer();
+        try {
+            communicator.startCommucateWithServer();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
 
         closeStreams();
     }

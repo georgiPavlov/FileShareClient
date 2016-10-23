@@ -1,27 +1,42 @@
 package com.GP.ClientImplementator;
 
-import java.io.BufferedReader;
-import java.io.BufferedWriter;
-import java.io.IOException;
+import java.io.*;
 
 /**
  * Created by user on 10/23/16.
  */
 public class ClientCommunicator {
-    private BufferedWriter out;
-    private BufferedReader in;
+    private DataOutputStream out;
+    private DataInputStream in;
 
-    public ClientCommunicator(BufferedWriter out, BufferedReader in) {
+    public ClientCommunicator(DataOutputStream out, DataInputStream in) {
         this.out = out;
         this.in = in;
     }
 
-    public void startCommucateWithServer(){
+    public void startCommucateWithServer() throws IOException {
+        String fileName = in.readUTF();
+
+           File file = new File("/home/user/FileShareClient/files/videos/" + fileName);
+        FileOutputStream fos = null;
         try {
-            System.out.println(in.readLine());
-        } catch (IOException e) {
+           fos = new FileOutputStream(file);
+        } catch (FileNotFoundException e) {
             e.printStackTrace();
         }
+        System.out.println("Waiting for File");
+        int count = 0;
+        byte[] b = new byte[1000];
+        System.out.println("Incoming File");
+        while((count = in.read(b)) != -1){
+            fos.write(b, 0, count);
+        }
+        fos.close();
+
+
+
+
+
     }
 
 
