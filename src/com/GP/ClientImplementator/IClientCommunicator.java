@@ -6,7 +6,7 @@ package com.GP.ClientImplementator;
 public interface IClientCommunicator {
     boolean loginAuthentication(String user , String password);
     boolean commitFromAdmin(String path , String category);
-    boolean requestFileFromServer(String path);
+    boolean requestFileFromServer(String path , String nameFile , String dir);
     boolean deleteFromAdmin(String textPath);
     void getEntriesFromServerAPP();
     void closeSocket();

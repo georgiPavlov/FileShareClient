@@ -18,6 +18,7 @@ public class ClientCommunicator implements IClientCommunicator{
     private DataInputStream in;
     private boolean isCurrentUserAdmin = false;
     private static final Logger LOGGER = Logger.getLogger( ClientImplementor.class.getName() );
+    private static final int SIZE = 1000;
 
     public ClientCommunicator(DataOutputStream out, DataInputStream in) {
         this.out = out;
@@ -47,19 +48,32 @@ public class ClientCommunicator implements IClientCommunicator{
             fos.write(b, 0, count);
         }
         fos.close();*/
+
+       //to do macher for input
+
+        loginAuthentication("basicUser" , "basicPassword");
+        requestFileFromServer("/home/user/FileShare/files/images/test.jpg" , "test.jpg" ,
+                "/home/user/FileShareClient/files/videos");
+        System.out.println("out");
+        while (true){
+
+        }
+        //closeSocket();
     }
 
 
     @Override
     public boolean loginAuthentication(String user, String password) {
         try {
-            out.write(1);
+            out.writeInt(1);
             out.writeUTF(user);
             out.writeUTF(password);
             boolean isAuthenticationOK = in.readBoolean();
+            System.out.println(isAuthenticationOK  + " is ok with log in");
             if(isAuthenticationOK){
                 isCurrentUserAdmin = in.readBoolean();
                 getAdminState();
+                System.out.println(isCurrentUserAdmin + " is admin");
                 getEntriesFromServerAPP();
                 return true;
             }
@@ -73,11 +87,13 @@ public class ClientCommunicator implements IClientCommunicator{
     @Override
     public void getEntriesFromServerAPP() {
         try {
-            boolean isPathListEmpty = in.readBoolean();
-            if(!isPathListEmpty){
-                return;
-            }
+          //  boolean isPathListEmpty = in.readBoolean();
+          //  System.out.println(isPathListEmpty);
+          //  if(!isPathListEmpty){
+         //       return;
+         //   }
             int entrySize = in.readInt();
+            System.out.println(entrySize + " entry size!!!!!!!!");
             String name , category, path;
             for (int i = 0; i < entrySize; i++) {
                     category = in.readUTF();
@@ -86,22 +102,28 @@ public class ClientCommunicator implements IClientCommunicator{
                 entries.add(new FileEntry(path,category));
             }
             //to do logger !!!!!!!!!!!11
+            testPrint();
         } catch (IOException e) {
             e.printStackTrace();
         }
     }
 
+    void testPrint(){
+        for (int i = 0; i < LocalDB.entries.size() ; i++) {
+            System.out.println(entries.get(i).toString());
+        }
+    }
 
     @Override
     public boolean commitFromAdmin(String path , String category) {
         try {
                 out.writeInt(2);
-                out.writeUTF(path);
-                out.writeUTF(category);
                 File file = new File(path);
                 if(!file.exists()){
                  return  false;
                 }
+                out.writeUTF(path);
+                out.writeUTF(category);
                 FileInputStream fis = null;
                 try {
                     fis = new FileInputStream(file);
@@ -111,12 +133,14 @@ public class ClientCommunicator implements IClientCommunicator{
                 }
                // out.writeUTF(file.getName());
                 int count = 0;
-                byte[] b = new byte[1000];
+                byte[] b = new byte[SIZE];
+                out.writeLong(getFileLoops(file));
                 LOGGER.log(Level.FINE, "uploading");
                 System.out.println("Uploading File...");
 
-                while ((count = fis.read(b)) != -1) {
+                while ((count = fis.read(b)) != -1 ) {
                     out.write(b, 0, count);
+                    //System.out.println("in loop");
                 }
                 LOGGER.log(Level.FINE, "upload finished");
                 System.out.println("upload finished");
@@ -131,25 +155,24 @@ public class ClientCommunicator implements IClientCommunicator{
 
         } catch (IOException e) {
             e.printStackTrace();
+            LOGGER.log(Level.FINE , "file is not in the db!");
             return false;
         }
-        //LOGGER.log(Level.FINE , "file is not in the db!");
-
-       // return false;
     }
 
     @Override
-    public boolean requestFileFromServer(String path) {
+    public boolean requestFileFromServer(String path , String nameFile , String dir) {
 
         try {
             out.writeInt(3);
-            String textPath = in.readUTF();
+            //String textPath = in.readUTF();
             //vies if file exist
+            out.writeUTF(path);
             boolean isInDb = in.readBoolean();
             if(!isInDb){
                 return false;
             }
-            File file = new File(textPath);
+            File file = new File(dir + "/" + nameFile);
             FileOutputStream fos = null;
             try {
                 fos = new FileOutputStream(file);
@@ -159,12 +182,19 @@ public class ClientCommunicator implements IClientCommunicator{
             LOGGER.log(Level.FINE, "waiting for file");
             System.out.println("Waiting for File");
             int count = 0;
-            byte[] b = new byte[1000];
+            byte[] b = new byte[SIZE];
+            long sizeFile = in.readLong();
+            System.out.println(sizeFile + " file size");
+
             System.out.println("Incoming File");
-            while((count = in.read(b)) != -1){
+            for(long i = 0 ; i < sizeFile ; i++ ){
+                count = in.read(b);
                 fos.write(b, 0, count);
             }
+
+            System.out.println("closed");
             LOGGER.log(Level.FINE, "file is written");
+            System.out.println("file is written");
             LocalDB.currentRequest = in.readBoolean();
             if(!currentRequest){
                 return false;
@@ -199,9 +229,30 @@ public class ClientCommunicator implements IClientCommunicator{
     @Override
     public void closeSocket() {
         try {
-            out.write(666);
+            out.writeInt(666);
         } catch (IOException e) {
             e.printStackTrace();
         }
+    }
+
+    private boolean testBytes( byte[] bytesA ,byte[] bytesB ){
+        if(bytesA.length == bytesB.length){
+        for (int i = 0; i < bytesA.length ; i++) {
+            System.out.println("in");
+            if(bytesA[i] != bytesB[i]){
+                return false;
+            }
+        }
+        }else {return false;}
+        return true;
+    }
+
+    private long getFileLoops(File file){
+        long fileSize = file.length();
+        long loopCount = fileSize / SIZE;
+        if(fileSize % SIZE != 0){
+            loopCount++;
+        }
+        return loopCount;
     }
 }
