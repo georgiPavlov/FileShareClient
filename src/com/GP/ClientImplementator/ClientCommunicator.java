@@ -51,9 +51,12 @@ public class ClientCommunicator implements IClientCommunicator{
 
        //to do macher for input
 
-        loginAuthentication("basicUser" , "basicPassword");
+        loginAuthentication("rootUser" , "rootPassword");
         requestFileFromServer("/home/user/FileShare/files/images/test.jpg" , "test.jpg" ,
                 "/home/user/FileShareClient/files/videos");
+        //commitFromAdmin("/home/user/FileShareClient/files/images/1.jpg" , "laptops_images" ,
+               // "/home/user/FileShare/files/images/1.jpg");
+      //  deleteFromAdmin("/home/user/FileShare/files/images/1.jpg");
         System.out.println("out");
         while (true){
 
@@ -115,14 +118,14 @@ public class ClientCommunicator implements IClientCommunicator{
     }
 
     @Override
-    public boolean commitFromAdmin(String path , String category) {
+    public boolean commitFromAdmin(String path , String category , String futureDir) {
         try {
                 out.writeInt(2);
                 File file = new File(path);
                 if(!file.exists()){
                  return  false;
                 }
-                out.writeUTF(path);
+                out.writeUTF(futureDir);
                 out.writeUTF(category);
                 FileInputStream fis = null;
                 try {
