@@ -137,20 +137,25 @@ public class ClientCommunicator implements IClientCommunicator{
                // out.writeUTF(file.getName());
                 int count = 0;
                 byte[] b = new byte[SIZE];
-                out.writeLong(getFileLoops(file));
+                long fileLoops = getFileLoops(file);
+                out.writeLong(fileLoops);
+                LocalDB.progressBar = fileLoops;
                 LOGGER.log(Level.FINE, "uploading");
                 System.out.println("Uploading File...");
+                long inc = 0;
 
                 while ((count = fis.read(b)) != -1 ) {
                     out.write(b, 0, count);
+                    inc++;
+                    LocalDB.currentProgressBarValue = inc;
                     //System.out.println("in loop");
                 }
                 LOGGER.log(Level.FINE, "upload finished");
                 System.out.println("upload finished");
-                LocalDB.currentRequest = in.readBoolean();
-                if(!currentRequest){
-                    return false;
-                }
+              //  LocalDB.currentRequest = in.readBoolean();
+              //  if(!currentRequest){
+              //      return false;
+              //  }
                 fis.close();
 
                 //unlock writer
@@ -225,6 +230,7 @@ public class ClientCommunicator implements IClientCommunicator{
         }
         try {
             LocalDB.currentRequest =  in.readBoolean();
+
         } catch (IOException e) {
             e.printStackTrace();
         }
