@@ -1,0 +1,8 @@
+<component name="ArtifactManager">
+  <artifact type="jar" name="FileShareClient:jar">
+    <output-path>$PROJECT_DIR$/out/artifacts/FileShareClient_jar</output-path>
+    <root id="archive" name="FileShareClient.jar">
+      <element id="module-output" name="FileShareClient" />
+    </root>
+  </artifact>
+</component>

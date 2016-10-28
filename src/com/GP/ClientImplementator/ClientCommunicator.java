@@ -58,10 +58,10 @@ public class ClientCommunicator implements IClientCommunicator{
                // "/home/user/FileShare/files/images/1.jpg");
       //  deleteFromAdmin("/home/user/FileShare/files/images/1.jpg");
         System.out.println("out");
-        while (true){
+       // while (true){
 
-        }
-        //closeSocket();
+       // }
+        closeSocket();
     }
 
 
@@ -187,10 +187,12 @@ public class ClientCommunicator implements IClientCommunicator{
             int count = 0;
             byte[] b = new byte[SIZE];
             long sizeFile = in.readLong();
+            LocalDB.progressBar = sizeFile;
             System.out.println(sizeFile + " file size");
 
             System.out.println("Incoming File");
             for(long i = 0 ; i < sizeFile ; i++ ){
+                LocalDB.currentProgressBarValue = i;
                 count = in.read(b);
                 fos.write(b, 0, count);
             }
@@ -198,10 +200,11 @@ public class ClientCommunicator implements IClientCommunicator{
             System.out.println("closed");
             LOGGER.log(Level.FINE, "file is written");
             System.out.println("file is written");
-            LocalDB.currentRequest = in.readBoolean();
-            if(!currentRequest){
-                return false;
-            }
+           // LocalDB.currentRequest = in.readBoolean();
+           // if(!currentRequest){
+              //  System.out.println("in");
+               // return false;
+         //   }
             fos.close();
             System.out.println("fos closed");
             return true;

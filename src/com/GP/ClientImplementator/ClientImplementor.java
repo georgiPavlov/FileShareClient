@@ -12,6 +12,16 @@ public class ClientImplementor {
     private DataInputStream in;
     private Socket socket;
 
+    public DataOutputStream getOut() {
+        return out;
+    }
+
+
+    public DataInputStream getIn() {
+        return in;
+    }
+
+
     public ClientImplementor(int port){
         this.port = port;
         try {
