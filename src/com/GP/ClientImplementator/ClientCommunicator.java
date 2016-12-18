@@ -52,15 +52,15 @@ public class ClientCommunicator implements IClientCommunicator{
        //to do macher for input
 
         loginAuthentication("rootUser" , "rootPassword");
-        requestFileFromServer("/home/user/FileShare/files/images/test.jpg" , "test.jpg" ,
-                "/home/user/FileShareClient/files/videos");
-        //commitFromAdmin("/home/user/FileShareClient/files/images/1.jpg" , "laptops_images" ,
-               // "/home/user/FileShare/files/images/1.jpg");
+       // requestFileFromServer("/home/user/FileShare/files/images/test.jpg" , "test.jpg" ,
+            //    "/home/user/FileShareClient/files/videos");
+        commitFromAdmin("/home/user/FileShareClient/files/videos/test.jpg" , "laptops_images" ,
+                "/home/user/FileShare/files/images/test.jpg");
       //  deleteFromAdmin("/home/user/FileShare/files/images/1.jpg");
         System.out.println("out");
-       // while (true){
+      //  while (true){
 
-       // }
+      //  }
         closeSocket();
     }
 
@@ -123,10 +123,14 @@ public class ClientCommunicator implements IClientCommunicator{
                 out.writeInt(2);
                 File file = new File(path);
                 if(!file.exists()){
+                    System.out.println("end");
                  return  false;
                 }
                 out.writeUTF(futureDir);
+            System.out.println(futureDir);
                 out.writeUTF(category);
+            System.out.println(category);
+
                 FileInputStream fis = null;
                 try {
                     fis = new FileInputStream(file);
@@ -138,18 +142,20 @@ public class ClientCommunicator implements IClientCommunicator{
                 int count = 0;
                 byte[] b = new byte[SIZE];
                 long fileLoops = getFileLoops(file);
-                out.writeLong(fileLoops);
-                LocalDB.progressBar = fileLoops;
+                 out.writeLong(getFileLoops(file));
+                System.out.println("file loops" + fileLoops);
+
                 LOGGER.log(Level.FINE, "uploading");
                 System.out.println("Uploading File...");
                 long inc = 0;
-
+                 LocalDB.progressBar = fileLoops;
                 while ((count = fis.read(b)) != -1 ) {
                     out.write(b, 0, count);
                     inc++;
                     LocalDB.currentProgressBarValue = inc;
                     //System.out.println("in loop");
                 }
+                System.out.println(inc + " inc");
                 LOGGER.log(Level.FINE, "upload finished");
                 System.out.println("upload finished");
               //  LocalDB.currentRequest = in.readBoolean();
